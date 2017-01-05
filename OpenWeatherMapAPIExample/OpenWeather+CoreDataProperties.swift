@@ -19,7 +19,7 @@ extension OpenWeather {
     @NSManaged var dt: Double
     @NSManaged var humidity: String?
     @NSManaged var icon: String?
-    @NSManaged var lastUpdated: NSTimeInterval
+    @NSManaged var lastUpdated: TimeInterval
     @NSManaged var main: String?
     @NSManaged var maxTemp: String?
     @NSManaged var minTemp: String?

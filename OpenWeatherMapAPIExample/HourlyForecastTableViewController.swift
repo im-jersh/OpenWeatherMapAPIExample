@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class HourlyForecastTableViewController: UITableViewController {
 
@@ -14,8 +15,8 @@ class HourlyForecastTableViewController: UITableViewController {
     var hourlyForecasts : [OpenWeatherThreeHourForecast] = []
     
     lazy var managedObjectContext: NSManagedObjectContext = {
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        return appDelegate.managedObjectContext!
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        return appDelegate.persistentContainer.viewContext
         }()
     
     
@@ -28,11 +29,6 @@ class HourlyForecastTableViewController: UITableViewController {
         // set the view controllers nav item title
         self.title = forecastForDay.weekday
         
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
 // MARK: CORE DATA
@@ -73,31 +69,31 @@ class HourlyForecastTableViewController: UITableViewController {
 
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.hourlyForecasts.count
     }
 
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("hourlyForecastCell", forIndexPath: indexPath) as! HourlyForecastTableViewCell
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "hourlyForecastCell", for: indexPath as IndexPath) as! HourlyForecastTableViewCell
 
         // get the appropriate forecast object for this cell
         let data = self.hourlyForecasts[indexPath.row]
         
         // extract the forecast's time for the label text
-        let date = NSDate(timeIntervalSince1970: data.day)
-        let formatter = NSDateFormatter()
-        if let timezone = NSTimeZone(abbreviation: "CST") {
+        let date = Date(timeIntervalSince1970: data.day)
+        let formatter = DateFormatter()
+        if let timezone = TimeZone(abbreviation: "CST") {
             formatter.timeZone = timezone
         }
         
         formatter.dateFormat = "h:mma"
         
-        cell.hourLabel.text = formatter.stringFromDate(date)
+        cell.hourLabel.text = formatter.string(from: date)
         
         if let temp = data.temp {
             cell.tempLabel.text = temp
@@ -120,24 +116,14 @@ class HourlyForecastTableViewController: UITableViewController {
             cell.descriptionLabel.text = main
         }
         
-        cell.backgroundColor = MobileConfig.sharedManager().backgroundCol
+        cell.backgroundColor = UIColor(red: 51.0/255.0, green: 51.0/255.0, blue: 51.0/255.0, alpha: 1.0)
 
         return cell
     }
     
-    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        cell.separatorInset = UIEdgeInsetsZero
-        self.tableView.layoutMargins = UIEdgeInsetsZero
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        cell.separatorInset = UIEdgeInsets.zero
+        self.tableView.layoutMargins = UIEdgeInsets.zero
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

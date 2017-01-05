@@ -39,12 +39,12 @@
 		B5A918531E1EDCD500144223 /* HourlyForecastTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HourlyForecastTableViewController.swift; sourceTree = "<group>"; };
 		B5A918551E1EDCD500144223 /* OWMForecastCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWMForecastCollectionViewCell.swift; sourceTree = "<group>"; };
 		B5A918571E1EDCD500144223 /* OWMViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWMViewController.swift; sourceTree = "<group>"; };
-		B5A918581E1EDCD500144223 /* WeatherFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeatherFetcher.swift; sourceTree = "<group>"; };
-		B5A918631E1EDE0200144223 /* OpenWeather.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenWeather.swift; sourceTree = "<group>"; };
+		B5A918581E1EDCD500144223 /* WeatherFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = WeatherFetcher.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		B5A918631E1EDE0200144223 /* OpenWeather.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OpenWeather.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		B5A918641E1EDE0200144223 /* OpenWeather+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OpenWeather+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B5A918651E1EDE0200144223 /* OpenWeatherDailyForecast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenWeatherDailyForecast.swift; sourceTree = "<group>"; };
+		B5A918651E1EDE0200144223 /* OpenWeatherDailyForecast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OpenWeatherDailyForecast.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		B5A918661E1EDE0200144223 /* OpenWeatherDailyForecast+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OpenWeatherDailyForecast+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B5A918671E1EDE0200144223 /* OpenWeatherThreeHourForecast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenWeatherThreeHourForecast.swift; sourceTree = "<group>"; };
+		B5A918671E1EDE0200144223 /* OpenWeatherThreeHourForecast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OpenWeatherThreeHourForecast.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		B5A918681E1EDE0200144223 /* OpenWeatherThreeHourForecast+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OpenWeatherThreeHourForecast+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -100,9 +100,9 @@
 		B5A918611E1EDD9700144223 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B5A9183F1E1EDB1100144223 /* Main.storyboard */,
 				B5A918551E1EDCD500144223 /* OWMForecastCollectionViewCell.swift */,
 				B5A918521E1EDCD500144223 /* HourlyForecastTableViewCell.swift */,
-				B5A9183F1E1EDB1100144223 /* Main.storyboard */,
 			);
 			name = Views;
 			sourceTree = "<group>";

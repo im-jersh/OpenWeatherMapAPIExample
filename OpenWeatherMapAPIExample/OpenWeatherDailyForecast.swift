@@ -12,18 +12,18 @@ import CoreData
 
 class OpenWeatherDailyForecast: NSManagedObject {
 
-    convenience init?(withJSON json: [String : AnyObject], inManagedObjectContext context: NSManagedObjectContext) {
+    convenience init?(withJSON json: [String : Any], inManagedObjectContext context: NSManagedObjectContext) {
      
         // Create an entity for the data
-        guard let entityDescription = NSEntityDescription.entityForName("OpenWeatherDailyForecast", inManagedObjectContext: context) else {
+        guard let entityDescription = NSEntityDescription.entity(forEntityName: "OpenWeatherDailyForecast", in: context) else {
             print("Error creating DailyWeather entity in \(#function)")
             return nil
         }
         
-        self.init(entity: entityDescription, insertIntoManagedObjectContext: nil)
+        self.init(entity: entityDescription, insertInto: nil)
         
         // Extract data
-        guard let weather = json["weather"] as? [AnyObject], firstObject = weather.first as? [String : AnyObject], main = firstObject["main"] as? String, desc = firstObject["description"] as? String, icon = firstObject["icon"] as? String, dt = json["dt"] as? Double else {
+        guard let weather = json["weather"] as? [Any], let firstObject = weather.first as? [String : Any], let main = firstObject["main"] as? String, let desc = firstObject["description"] as? String, let icon = firstObject["icon"] as? String, let dt = json["dt"] as? Double else {
             print("Error parsing required json data to create DailyForecast object in \(#function)")
             return nil
         }
@@ -41,7 +41,7 @@ class OpenWeatherDailyForecast: NSManagedObject {
             self.pressure = String(pressure)
         }
         
-        if let temp = json["temp"] as? [String : AnyObject] {
+        if let temp = json["temp"] as? [String : Any] {
             
             if let minTemp = temp["min"] as? Double {
                 self.minTemp = String(Int(minTemp))
@@ -61,13 +61,13 @@ class OpenWeatherDailyForecast: NSManagedObject {
             self.cloudPerc = String(cloudPerc)
         }
         
-        let formatter = NSDateFormatter()
-        if let timezone = NSTimeZone(abbreviation: "CST") {
+        let formatter = DateFormatter()
+        if let timezone = TimeZone(abbreviation: "CST") {
             formatter.timeZone = timezone
         }
         formatter.dateFormat = "EEEE"
         
-        self.weekday = formatter.stringFromDate(NSDate(timeIntervalSince1970: self.day))
+        self.weekday = formatter.string(from: Date(timeIntervalSince1970: self.day))
         
     }
     

@@ -15,12 +15,12 @@ import CoreData
 // to change these values after instantiation along with an init()
 // method for instantiating a custom city struct.
 struct City {
-    private var id : Int
-    private var name : String
-    private var county : String
-    private var country : String
-    private var lat : Double
-    private var lon : Double
+    private(set) var id : Int
+    private(set) var name : String
+    private(set) var county : String
+    private(set) var country : String
+    private(set) var lat : Double
+    private(set) var lon : Double
     
     init() {
         self.id = 4381982
@@ -78,11 +78,11 @@ enum WeatherType: String {
     private var currentWeather : OpenWeather!
     
     lazy var context : NSManagedObjectContext = {
-        return self.delegate.managedObjectContext
+        return self.delegate.persistentContainer.viewContext
     }()
     
     lazy var delegate : AppDelegate = {
-       return UIApplication.sharedApplication().delegate as! AppDelegate
+       return UIApplication.shared.delegate as! AppDelegate
     }()
     
     // Singleton
@@ -111,14 +111,14 @@ enum WeatherType: String {
         let stringURL = weatherType.rawValue + "id=" + String(city.id) + "&units=imperial" + "&APPID=" + APPID
         
         // Create the URL from the string
-        guard let url = NSURL(string: stringURL) else {
+        guard let url = URL(string: stringURL) else {
             print("NSURL could not be created for current weather request in \(#function)")
             return
         }
         
-        let session = NSURLSession.sharedSession()
+        let session = URLSession.shared
         
-        let dataTask = session.dataTaskWithURL(url) { (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+        let dataTask = session.dataTask(with: url) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
             
             // Check for errors
             if let error = error {
@@ -127,7 +127,7 @@ enum WeatherType: String {
             }
             
             // Check the response code
-            if let res = response as! NSHTTPURLResponse? {
+            if let res = response as! HTTPURLResponse? {
                 if res.statusCode != 200 {
                     return
                 }
@@ -137,11 +137,10 @@ enum WeatherType: String {
             guard let data = data else { return }
             
             do {
-                if let json = try NSJSONSerialization.JSONObjectWithData(data, options: []) as? [String : AnyObject] {
-                    dispatch_async(dispatch_get_main_queue()) {
-                        self.processCurrentWeatherData(json)
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String : Any] {
+                    DispatchQueue.main.async {
+                        self.processCurrentWeatherData(json: json)
                     }
-                    
                 }
                 
             } catch let error as NSError {
@@ -167,15 +166,15 @@ enum WeatherType: String {
         let stringURL = weatherType.rawValue + "id=" + String(city.id) + "&units=imperial" + "&cnt=6" + "&APPID=" + APPID
         
         // Create the actual URL from the string
-        guard let url = NSURL(string: stringURL) else {
+        guard let url = URL(string: stringURL) else {
             print("NSURL could not be created for forecast request in \(#function)")
             return
         }
         
         // create the request session
-        let session = NSURLSession.sharedSession()
+        let session = URLSession.shared
         
-        let dataTask = session.dataTaskWithURL(url) { (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+        let dataTask = session.dataTask(with: url) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
             
             // Check for errors
             if let error = error {
@@ -184,7 +183,7 @@ enum WeatherType: String {
             }
             
             // Check the response code
-            if let res = response as! NSHTTPURLResponse? {
+            if let res = response as! HTTPURLResponse? {
                 if res.statusCode != 200 {
                     return
                 }
@@ -194,9 +193,9 @@ enum WeatherType: String {
             guard let data = data else { return }
             
             do {
-                if let json = try NSJSONSerialization.JSONObjectWithData(data, options: []) as? [String : AnyObject] {
-                    dispatch_async(dispatch_get_main_queue()) {
-                        self.processDailyForecastData(json)
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String : Any] {
+                    DispatchQueue.main.async {
+                        self.processDailyForecastData(json: json)
                     }
                     
                 }
@@ -223,15 +222,15 @@ enum WeatherType: String {
         print(stringURL)
         
         // Create the actual URL from the string
-        guard let url = NSURL(string: stringURL) else {
+        guard let url = URL(string: stringURL) else {
             print("NSURL could not be created for forecast request in \(#function)")
             return
         }
         
         // create the request session
-        let session = NSURLSession.sharedSession()
+        let session = URLSession.shared
         
-        let dataTask = session.dataTaskWithURL(url) { (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+        let dataTask = session.dataTask(with: url) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
             
             // Check for errors
             if let error = error {
@@ -240,7 +239,7 @@ enum WeatherType: String {
             }
             
             // Check the response code
-            if let res = response as! NSHTTPURLResponse? {
+            if let res = response as! HTTPURLResponse? {
                 if res.statusCode != 200 {
                     return
                 }
@@ -250,9 +249,9 @@ enum WeatherType: String {
             guard let data = data else { return }
             
             do {
-                if let json = try NSJSONSerialization.JSONObjectWithData(data, options: []) as? [String : AnyObject] {
-                    dispatch_async(dispatch_get_main_queue()) { 
-                        self.processHourlyWeatherData(json)
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String : Any] {
+                    DispatchQueue.main.async {
+                        self.processHourlyWeatherData(json: json)
                     }
                     
                 }
@@ -266,7 +265,7 @@ enum WeatherType: String {
     }
 
     
-    func processCurrentWeatherData(json: [String : AnyObject]) {
+    func processCurrentWeatherData(json: [String : Any]) {
         
         if let currentWeather = OpenWeather(withJSON: json, inManagedObjectContext: self.context) {
             // Check if there are any existing entities in the persistent store
@@ -283,7 +282,7 @@ enum WeatherType: String {
             }
             
             
-            self.context.insertObject(currentWeather)
+            self.context.insert(currentWeather)
             self.delegate.saveContext()
             
             self.currentWeather = currentWeather
@@ -293,9 +292,9 @@ enum WeatherType: String {
     }
     
     
-    func processDailyForecastData(json: [String : AnyObject]) {
+    func processDailyForecastData(json: [String : Any]) {
         
-        if let list = json["list"] as? [[String : AnyObject]]  {
+        if let list = json["list"] as? [[String : Any]]  {
             var dailyForecasts : [OpenWeatherDailyForecast] = []
             
             for index in 1...5 {
@@ -325,10 +324,10 @@ enum WeatherType: String {
             }
             
             for forecast in dailyForecasts {
-                self.context.insertObject(forecast)
+                self.context.insert(forecast)
             }
             
-            self.updateMinAndMaxTempForCurrentWeather(self.currentWeather, fromJSONData: list)
+            self.updateMinAndMaxTempForCurrentWeather(currentWeather: self.currentWeather, fromJSONData: list)
             
             self.delegate.saveContext()
             
@@ -339,9 +338,9 @@ enum WeatherType: String {
     }
     
     
-    func processHourlyWeatherData(json: [String : AnyObject]) {
+    func processHourlyWeatherData(json: [String : Any]) {
         
-        if let list = json["list"] as? [[String : AnyObject]] {
+        if let list = json["list"] as? [[String : Any]] {
             
             var hourlyForecasts : [OpenWeatherThreeHourForecast] = []
             
@@ -368,7 +367,7 @@ enum WeatherType: String {
             }
             
             for forecast in hourlyForecasts {
-                self.context.insertObject(forecast)
+                self.context.insert(forecast)
             }
             
             self.delegate.saveContext()
@@ -381,7 +380,7 @@ enum WeatherType: String {
     func deleteEntities(entities: [NSManagedObject], inManagedObjectContext context: NSManagedObjectContext) {
         
         for entity in entities {
-            context.deleteObject(entity)
+            context.delete(entity)
         }
         
         self.delegate.saveContext()
@@ -389,14 +388,14 @@ enum WeatherType: String {
     }
     
     
-    func updateMinAndMaxTempForCurrentWeather(currentWeather: OpenWeather?, fromJSONData json: [[String : AnyObject]]) {
+    func updateMinAndMaxTempForCurrentWeather(currentWeather: OpenWeather?, fromJSONData json: [[String : Any]]) {
         
         if let currentWeather = currentWeather {
             
-            guard let currentDay = json.first, temp = currentDay["temp"] as? [String : AnyObject] else { return }
+            guard let currentDay = json.first, let temp = currentDay["temp"] as? [String : Any] else { return }
             
             // Extract max/min temp from forecast
-            if let min = temp["min"] as? Double, max = temp["max"] as? Double {
+            if let min = temp["min"] as? Double, let max = temp["max"] as? Double {
                 // Cast to Int then String before saving to record
                 currentWeather.minTemp = String(Int(min))
                 currentWeather.maxTemp = String(Int(max))
@@ -407,40 +406,40 @@ enum WeatherType: String {
     }
     
     
-    func fetchWeather(forCity city: City = City(), forType weatherType: WeatherType = WeatherType.Current, withCompletion completed: (jsonObject: AnyObject?) -> (AnyObject)) {
+    func fetchWeather(forCity city: City = City(), forType weatherType: WeatherType = WeatherType.Current, withCompletion completed: @escaping (_ jsonObject: Any?) -> (Any)) {
         
         // create a string representation of our api call URL
         let stringURL = weatherType.rawValue + "id=" + String(city.id)
         
         // create the actual URL from the string
-        guard let url = NSURL(string: stringURL) else {
+        guard let url = URL(string: stringURL) else {
             print("NSURL could not be created")
             return
         }
         
-        let session = NSURLSession.sharedSession()
+        let session = URLSession.shared
         
-        let dataTask = session.dataTaskWithURL(url) { (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+        let dataTask = session.dataTask(with: url) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
             // unwrap and print the response
-            if let res = response as! NSHTTPURLResponse? {
+            if let res = response as! HTTPURLResponse? {
                 print("Response: \(res.statusCode)")
             }
             
             // unwrap and print a string rep of the data
             if let dat = data {
-                let dataString = NSString(data: dat, encoding: NSUTF8StringEncoding)
+                let dataString = NSString(data: dat, encoding: String.Encoding.utf8.rawValue)
                 print("Body: \(dataString)")
                 do {
-                    let json = try NSJSONSerialization.JSONObjectWithData(dat, options: .MutableLeaves)
-                    completed(jsonObject: json)
+                    let json = try JSONSerialization.jsonObject(with: dat, options: .mutableLeaves)
+                    completed(json)
                 } catch let error as NSError {
                     print(error)
-                    let jsonStr = NSString(data: dat, encoding: NSUTF8StringEncoding)
-                    print(jsonStr)
-                    completed(jsonObject: nil)
+                    let jsonStr = NSString(data: dat, encoding: String.Encoding.utf8.rawValue)
+                    print(jsonStr ?? "")
+                    completed(nil)
                 } catch {
                     print("Failure creating weather JSON")
-                    completed(jsonObject: nil)
+                    completed(nil)
                 }
             }
             

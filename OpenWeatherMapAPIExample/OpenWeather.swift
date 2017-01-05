@@ -14,24 +14,24 @@ class OpenWeather: NSManagedObject {
     
     static let degreeF = " \u{2109}"
 
-    convenience init?(withJSON json: [String : AnyObject], inManagedObjectContext context: NSManagedObjectContext) {
+    convenience init?(withJSON json: [String : Any], inManagedObjectContext context: NSManagedObjectContext) {
         
         // Create an entity for the data
-        guard let entityDescription = NSEntityDescription.entityForName("OpenWeather", inManagedObjectContext: context) else {
+        guard let entityDescription = NSEntityDescription.entity(forEntityName: "OpenWeather", in: context) else {
             print("Error creating CurrentWeather entity in \(#function)")
             return nil
         }
         
         
-        self.init(entity: entityDescription, insertIntoManagedObjectContext: nil)
+        self.init(entity: entityDescription, insertInto: nil)
         
         // Extract data
-        guard let weather = json["weather"] as? [AnyObject], firstObject = weather.first as? [String : AnyObject], main = firstObject["main"] as? String, desc = firstObject["description"] as? String, icon = firstObject["icon"] as? String else {
+        guard let weather = json["weather"] as? [Any], let firstObject = weather.first as? [String : Any], let main = firstObject["main"] as? String, let desc = firstObject["description"] as? String, let icon = firstObject["icon"] as? String else {
             print("Error parsing required json data to create OpenWeather object in \(#function)")
             return nil
         }
         
-        guard let primaryData = json["main"] as? [String : AnyObject], temp = primaryData["temp"] as? Double else {
+        guard let primaryData = json["main"] as? [String : Any], let temp = primaryData["temp"] as? Double else {
             print("Error parsing json to create OpenWeather object in \(#function)")
             return nil
         }
@@ -64,7 +64,7 @@ class OpenWeather: NSManagedObject {
             self.maxTemp = String(Int(maxTemp))
         }
         
-        if let wind = json["wind"] as? [String : AnyObject] {
+        if let wind = json["wind"] as? [String : Any] {
             
             if let windSpeed = wind["speed"] as? Double {
                 self.windSpeed = String(Int(windSpeed))
@@ -72,7 +72,7 @@ class OpenWeather: NSManagedObject {
             
         }
         
-        if let clouds = json["clouds"] as? [String : AnyObject] {
+        if let clouds = json["clouds"] as? [String : Any] {
             
             if let cloudPerc = clouds["all"] as? Int {
                 self.cloudPerc = String(cloudPerc)
@@ -80,28 +80,28 @@ class OpenWeather: NSManagedObject {
             
         }
         
-        let formatter = NSDateFormatter()
-        if let timezone = NSTimeZone(abbreviation: "CST") {
+        let formatter = DateFormatter()
+        if let timezone = TimeZone(abbreviation: "CST") {
             formatter.timeZone = timezone
         }
         formatter.dateFormat = "h:mm"
         
-        if let sys = json["sys"] as? [String : AnyObject] {
+        if let sys = json["sys"] as? [String : Any] {
             
             if let rise = sys["sunrise"] as? Double {
-                let sunrise = NSDate(timeIntervalSince1970: rise)
-                self.sunrise = formatter.stringFromDate(sunrise)
+                let sunrise = Date(timeIntervalSince1970: rise)
+                self.sunrise = formatter.string(from: sunrise)
             }
             
             if let set = sys["sunset"] as? Double {
-                let sunset = NSDate(timeIntervalSince1970: set)
-                self.sunset = formatter.stringFromDate(sunset)
+                let sunset = Date(timeIntervalSince1970: set)
+                self.sunset = formatter.string(from: sunset)
             }
             
         }
         
         formatter.dateFormat = "h:mma 'on' MM/dd/yyyy"
-        self.retrieveTime = formatter.stringFromDate(NSDate(timeIntervalSince1970: self.dt))
+        self.retrieveTime = formatter.string(from: Date(timeIntervalSince1970: self.dt))
         
         self.lastUpdated = NSDate().timeIntervalSince1970
         
