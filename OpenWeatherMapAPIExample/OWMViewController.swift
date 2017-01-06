@@ -1,9 +1,9 @@
 //
 //  OWMViewController.swift
-//  GoMizzou
+//  OpenWeatherMapAPIExample
 //
-//  Created by Josh O'Steen on 10/7/15.
-//  Copyright © 2015 University of Missouri. All rights reserved.
+//  Created by Joshua O'Steen on 1/5/17.
+//  Copyright © 2017 Joshua O'Steen. All rights reserved.
 //
 
 import UIKit
@@ -26,7 +26,11 @@ import CoreData
     @IBOutlet weak var highLowLabel: UILabel!
     
     var currentWeather : OpenWeather!
-    var dailyForecast = [OpenWeatherDailyForecast?]()
+    var dailyForecast = [OpenWeatherDailyForecast?]() {
+        didSet {
+            self.forecastCollection.reloadData()
+        }
+    }
     
     lazy var managedObjectContext: NSManagedObjectContext = {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -41,21 +45,26 @@ import CoreData
         // Resize tempLabel font based on the UILabel's width
         self.tempLabel.adjustsFontSizeToFitWidth = true
         
-        // fetch records from Core Data
-        self.fetchCurrentWeather()
-        self.fetchDailyForecast()
+        WeatherFetcher.sharedFetcher.dataDelegate = self
+        WeatherFetcher.sharedFetcher.updateAllOpenWeatherServices()
         
     }
     
     
 // MARK: CORE DATA
+    func fetchData() {
+        // fetch records from Core Data
+        self.fetchCurrentWeather()
+        self.fetchDailyForecast()
+    }
+    
     func fetchCurrentWeather() {
         
-        let currentWeatherRequest = NSFetchRequest(entityName: "OpenWeather")
+        let currentWeatherRequest = NSFetchRequest<OpenWeather>(entityName: "OpenWeather")
         
         do {
             // fetch records
-            let records = try self.managedObjectContext.executeFetchRequest(currentWeatherRequest) as! [OpenWeather]
+            let records = try self.managedObjectContext.fetch(currentWeatherRequest)
             
             if records.count > 0 {
                 self.currentWeather = records.first!
@@ -111,14 +120,13 @@ import CoreData
     
     func fetchDailyForecast() {
         
-        let dailyForecastRequest = NSFetchRequest(entityName: "OpenWeatherDailyForecast")
+        let dailyForecastRequest = NSFetchRequest<OpenWeatherDailyForecast>(entityName: "OpenWeatherDailyForecast")
         dailyForecastRequest.fetchBatchSize = 5
         dailyForecastRequest.sortDescriptors = [NSSortDescriptor(key: "day", ascending: true)]
-        //dailyForecastRequest.predicate = NSPredicate(format: "day > %lf", self.currentWeather.dt)
         
         do {
             // fetch records
-            let records = try self.managedObjectContext.executeFetchRequest(dailyForecastRequest) as! [OpenWeatherDailyForecast]
+            let records = try self.managedObjectContext.fetch(dailyForecastRequest) 
             
             self.dailyForecast = records.map({ $0 as OpenWeatherDailyForecast })
             
@@ -175,7 +183,7 @@ import CoreData
 
 // MARK: UICollectionViewDelegateFlowLayout
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: self.forecastCollection.frame.size.height * 0.6, height: self.forecastCollection.frame.size.height)
+        return CGSize(width: self.forecastCollection.frame.size.height * 0.5, height: self.forecastCollection.frame.size.height)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -208,3 +216,43 @@ import CoreData
     
 
 }
+
+extension OWMViewController : WeatherFetcherDelegate {
+    
+    func weatherFetcher(_ weatherFetcher: WeatherFetcher, didCompleteFetch: Bool) {
+        self.fetchData()
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,14 +1,18 @@
 //
 //  WeatherFetcher.swift
-//  GoMizzou
+//  OpenWeatherMapAPIExample
 //
-//  Created by Josh O'Steen on 10/12/15.
-//  Copyright © 2015 University of Missouri. All rights reserved.
+//  Created by Joshua O'Steen on 1/5/17.
+//  Copyright © 2017 Joshua O'Steen. All rights reserved.
 //
 
 import UIKit
 import Foundation
 import CoreData
+
+protocol WeatherFetcherDelegate {
+    func weatherFetcher(_ weatherFetcher: WeatherFetcher, didCompleteFetch: Bool)
+}
 
 // Structure defining the information about a city. The default
 // values are for Columbia, MO but mutating functions are implemented
@@ -76,6 +80,8 @@ enum WeatherType: String {
     private let APPID = "30c51256fa77a35b476cf6cf82a2f779"
     
     private var currentWeather : OpenWeather!
+    var dataDelegate : WeatherFetcherDelegate?
+    
     
     lazy var context : NSManagedObjectContext = {
         return self.delegate.persistentContainer.viewContext
@@ -95,8 +101,6 @@ enum WeatherType: String {
     @objc func updateAllOpenWeatherServices() {
         print("*** UPDATING OPEN WEATHER ***")
         self.getCurrentWeather()
-//        self.getFiveDayForecastWeather()
-//        self.getHourlyForecastWeather()
     }
     
     // Use these methods when calling from objc code since
@@ -269,12 +273,11 @@ enum WeatherType: String {
         
         if let currentWeather = OpenWeather(withJSON: json, inManagedObjectContext: self.context) {
             // Check if there are any existing entities in the persistent store
-            let request = NSFetchRequest(entityName: "OpenWeather")
             do {
-                let results = try self.context.executeFetchRequest(request) as! [OpenWeather]
+                let results = try self.context.fetch(OpenWeather.fetchRequest())
                 
                 if !results.isEmpty {
-                    self.deleteEntities(results, inManagedObjectContext: self.context)
+                    self.deleteEntities(entities: results, inManagedObjectContext: self.context)
                 }
                 
             } catch let error as NSError {
@@ -312,12 +315,11 @@ enum WeatherType: String {
             }
             
             // Delete existing DailyForecast records
-            let request = NSFetchRequest(entityName: "OpenWeatherDailyForecast")
             do {
-                let results = try self.context.executeFetchRequest(request) as! [OpenWeatherDailyForecast]
+                let results = try self.context.fetch(OpenWeatherDailyForecast.fetchRequest())
                 
                 if !results.isEmpty {
-                    self.deleteEntities(results, inManagedObjectContext: self.context)
+                    self.deleteEntities(entities: results, inManagedObjectContext: self.context)
                 }
             } catch let error as NSError {
                 print("Error fetching DailyForecast records in \(#function): \(error)")
@@ -352,12 +354,11 @@ enum WeatherType: String {
             
             // Delete existing records before saving the new ones
             if !hourlyForecasts.isEmpty {
-                let request = NSFetchRequest(entityName: "OpenWeatherThreeHourForecast")
                 do {
-                    let results = try self.context.executeFetchRequest(request) as! [OpenWeatherThreeHourForecast]
+                    let results = try self.context.fetch(OpenWeatherThreeHourForecast.fetchRequest())
                     
                     if !results.isEmpty {
-                        self.deleteEntities(results, inManagedObjectContext: self.context)
+                        self.deleteEntities(entities: results, inManagedObjectContext: self.context)
                     }
                 } catch let error as NSError {
                     print("Error fetching HourlyForecast records in \(#function): \(error)")
@@ -372,14 +373,16 @@ enum WeatherType: String {
             
             self.delegate.saveContext()
             
+            self.dataDelegate?.weatherFetcher(self, didCompleteFetch: true)
+            
         }
         
     }
     
     
-    func deleteEntities(entities: [NSManagedObject], inManagedObjectContext context: NSManagedObjectContext) {
+    func deleteEntities(entities: [Any], inManagedObjectContext context: NSManagedObjectContext) {
         
-        for entity in entities {
+        for entity in entities as! [NSManagedObject] {
             context.delete(entity)
         }
         

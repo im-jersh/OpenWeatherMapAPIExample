@@ -283,7 +283,7 @@
                                             <outlet property="iconImage" destination="eIa-X3-pED" id="DGv-Um-vyC"/>
                                             <outlet property="weatherDescriptionLabel" destination="r9G-1b-nWS" id="Cj1-bi-2oN"/>
                                             <outlet property="weekdayLabel" destination="8vJ-8g-f2N" id="chj-Ld-VFL"/>
-                                            <segue destination="NZ8-zS-SXY" kind="push" identifier="showHourlyForecast" id="GfW-Zx-Anb"/>
+                                            <segue destination="NZ8-zS-SXY" kind="show" identifier="showHourlyForecast" id="GfW-Zx-Anb"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
@@ -350,7 +350,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oiN-CI-ybM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1042" y="933"/>
+            <point key="canvasLocation" x="783" y="934"/>
         </scene>
         <!--Hourly Forecast Table View Controller-->
         <scene sceneID="fQf-zh-pnx">
@@ -508,7 +508,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JIV-Df-wSv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1870" y="933"/>
+            <point key="canvasLocation" x="1511" y="933"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="wmb-hd-mGJ">
@@ -531,7 +531,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UHR-xB-eta" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="198" y="934"/>
+            <point key="canvasLocation" x="34" y="933"/>
         </scene>
     </scenes>
     <resources>
@@ -539,4 +539,5 @@
         <image name="13d" width="325" height="325"/>
         <image name="50d" width="325" height="325"/>
     </resources>
+    <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
 </document>

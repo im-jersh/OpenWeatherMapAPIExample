@@ -1,19 +1,19 @@
 //
-//  OpenWeather.swift
-//  GoMizzou
+//  OpenWeather+CoreDataClass.swift
+//  OpenWeatherMapAPIExample
 //
-//  Created by Josh O'Steen on 1/19/16.
-//  Copyright © 2016 University of Missouri. All rights reserved.
+//  Created by Joshua O'Steen on 1/5/17.
+//  Copyright © 2017 Joshua O'Steen. All rights reserved.
 //
 
 import Foundation
 import CoreData
 
+@objc(OpenWeather)
+public class OpenWeather: NSManagedObject {
 
-class OpenWeather: NSManagedObject {
-    
     static let degreeF = " \u{2109}"
-
+    
     convenience init?(withJSON json: [String : Any], inManagedObjectContext context: NSManagedObjectContext) {
         
         // Create an entity for the data
@@ -21,8 +21,7 @@ class OpenWeather: NSManagedObject {
             print("Error creating CurrentWeather entity in \(#function)")
             return nil
         }
-        
-        
+    
         self.init(entity: entityDescription, insertInto: nil)
         
         // Extract data
@@ -108,6 +107,6 @@ class OpenWeather: NSManagedObject {
         
         
     }
-    
+
     
 }

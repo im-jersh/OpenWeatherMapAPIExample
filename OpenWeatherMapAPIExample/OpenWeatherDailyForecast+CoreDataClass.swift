@@ -1,19 +1,19 @@
 //
-//  OpenWeatherDailyForecast.swift
-//  GoMizzou
+//  OpenWeatherDailyForecast+CoreDataClass.swift
+//  OpenWeatherMapAPIExample
 //
-//  Created by Josh O'Steen on 1/19/16.
-//  Copyright © 2016 University of Missouri. All rights reserved.
+//  Created by Joshua O'Steen on 1/5/17.
+//  Copyright © 2017 Joshua O'Steen. All rights reserved.
 //
 
 import Foundation
 import CoreData
 
-
-class OpenWeatherDailyForecast: NSManagedObject {
+@objc(OpenWeatherDailyForecast)
+public class OpenWeatherDailyForecast: NSManagedObject {
 
     convenience init?(withJSON json: [String : Any], inManagedObjectContext context: NSManagedObjectContext) {
-     
+        
         // Create an entity for the data
         guard let entityDescription = NSEntityDescription.entity(forEntityName: "OpenWeatherDailyForecast", in: context) else {
             print("Error creating DailyWeather entity in \(#function)")
@@ -70,35 +70,6 @@ class OpenWeatherDailyForecast: NSManagedObject {
         self.weekday = formatter.string(from: Date(timeIntervalSince1970: self.day))
         
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     
 }

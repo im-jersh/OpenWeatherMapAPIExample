@@ -1,16 +1,16 @@
 //
-//  OpenWeatherThreeHourForecast.swift
-//  GoMizzou
+//  OpenWeatherThreeHourForecast+CoreDataClass.swift
+//  OpenWeatherMapAPIExample
 //
-//  Created by Josh O'Steen on 1/21/16.
-//  Copyright © 2016 University of Missouri. All rights reserved.
+//  Created by Joshua O'Steen on 1/5/17.
+//  Copyright © 2017 Joshua O'Steen. All rights reserved.
 //
 
 import Foundation
 import CoreData
 
-
-class OpenWeatherThreeHourForecast: NSManagedObject {
+@objc(OpenWeatherThreeHourForecast)
+public class OpenWeatherThreeHourForecast: NSManagedObject {
 
     convenience init?(withJSON json: [String : Any], inManagedObjectContext context: NSManagedObjectContext) {
         
@@ -63,8 +63,9 @@ class OpenWeatherThreeHourForecast: NSManagedObject {
         if let dayText = json["dt_txt"] as? String {
             self.dayText = dayText
         }
-
+        
         
     }
 
+    
 }

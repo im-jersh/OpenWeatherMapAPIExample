@@ -1,9 +1,9 @@
 //
 //  HourlyForecastTableViewCell.swift
-//  GoMizzou
+//  OpenWeatherMapAPIExample
 //
-//  Created by Josh O'Steen on 10/19/15.
-//  Copyright © 2015 University of Missouri. All rights reserved.
+//  Created by Joshua O'Steen on 1/5/17.
+//  Copyright © 2017 Joshua O'Steen. All rights reserved.
 //
 
 import UIKit

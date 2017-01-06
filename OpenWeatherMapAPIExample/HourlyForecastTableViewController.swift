@@ -1,9 +1,9 @@
 //
 //  HourlyForecastTableViewController.swift
-//  GoMizzou
+//  OpenWeatherMapAPIExample
 //
-//  Created by Josh O'Steen on 10/19/15.
-//  Copyright © 2015 University of Missouri. All rights reserved.
+//  Created by Joshua O'Steen on 1/5/17.
+//  Copyright © 2017 Joshua O'Steen. All rights reserved.
 //
 
 import UIKit
@@ -45,7 +45,7 @@ class HourlyForecastTableViewController: UITableViewController {
         let upperBound = time + 43199
         
         // Set up the request, its predicate, and sort descriptor
-        let request = NSFetchRequest(entityName: "OpenWeatherThreeHourForecast")
+        let request = NSFetchRequest<OpenWeatherThreeHourForecast>(entityName: "OpenWeatherThreeHourForecast")
         let sortDescriptor = NSSortDescriptor(key: "day", ascending: true)
         let predicate = NSPredicate(format: "day >= %lf && day <= %lf", lowerBound, upperBound)
         
@@ -55,7 +55,7 @@ class HourlyForecastTableViewController: UITableViewController {
         // fetch the records
         do {
             // attempt to fetch
-            let records = try self.managedObjectContext.executeFetchRequest(request) as! [OpenWeatherThreeHourForecast]
+            let records = try self.managedObjectContext.fetch(request) 
             
             if !records.isEmpty {
                 self.hourlyForecasts = records.map({ $0 as OpenWeatherThreeHourForecast })
