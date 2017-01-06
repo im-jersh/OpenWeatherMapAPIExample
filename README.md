@@ -20,7 +20,7 @@ OpenWeatherMapAPIExample uses Core Data to locally persist weather data. The nee
 
 
 
-TODO:
+## TODO:
 - [x] Swift 3 conversion
 - [ ] Refactor overall architecture
 - [ ] UIStackView
